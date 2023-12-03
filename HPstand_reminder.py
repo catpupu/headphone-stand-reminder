@@ -16,6 +16,18 @@ def get_current_output_device():
     audio.terminate()
     return current_device
 
+def print_all_Headphones_device():
+    audio = pyaudio.PyAudio()
+    
+    print("Print all headphones device name:")
+    for i in range(audio.get_device_count()):
+        device_info = audio.get_device_info_by_index(i)
+        if ( device_info['maxOutputChannels'] > 0 ) and ( "Headphones" in device_info['name'] ) :
+            print(f"{device_info['name']}")
+
+    print("\n")
+    audio.terminate()
+
 def play_alert_sound( file_path ):
     pygame.mixer.init()
     pygame.mixer.music.load( file_path )
@@ -39,28 +51,37 @@ def popup_window():
     button.pack(pady=15)
     pop_up.mainloop()
     
+def load_setfile( name, media_file ):
+    if os.path.isfile("setting.txt"):
+        with open("setting.txt", 'r', encoding='utf-8') as setting:
+            name = setting.readline().strip()
+            media_file = setting.readline().strip()
+            # print( name + ", " + media_file )
+    else :
+        with open("setting.txt", 'w', encoding='utf-8') as setting:
+            # Traverse output device names and print
+            print_all_Headphones_device()
+            
+            name = input("headphone device name : ")
+            media_file = input("music file path : ")
+            setting.write( name + "\n" )
+            setting.write( media_file + "\n" )
+    
+# main function
 if __name__ == "__main__":
     
-    # 獲取py檔本身所在目錄並將其設為工作目錄
+    # Get py file directory and set it as the working directory
     script_directory = os.path.dirname(os.path.realpath(__file__))
     os.chdir(script_directory)
     
-    with open('set.txt', 'r', encoding='utf-8') as set_file:
-        name = set_file.readline()
-        name = name.strip()
-        media_file = set_file.readline()
-        media = media_file.strip()
-        # print( name + ", " + media_file )
-        
-    '''
-    name = "耳機 (Realtek USB2.0 Audio)"
-    file = "E:\專案作品\耳機架\media.mp3"
-    '''
+    headphone_name = "耳機 (Realtek USB2.0 Audio)"
+    media_file = "E:\專案作品\耳機架\media.mp3"
+    load_setfile( headphone_name, media_file )
     
     while True:
         current_output_device = get_current_output_device()
 
-        if current_output_device['name'] != name :
+        if current_output_device['name'] != headphone_name :
             play_alert_sound( media_file )
             popup_window()
             break
