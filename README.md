@@ -3,7 +3,7 @@
 when you switch the audio output, it will remind you to put the headphone back into headphone stand
 
 ### How to operate this program?
-1. make sure your computer's operating system is Windows.
+1. make sure your computer's operating system is Windows
 2. download HPstand_reminder.py
 3. compile it to an executable file
 4. first run this program you need to input your headphone device name and audio file(Don't worry, you won't have to enter it every time.)
