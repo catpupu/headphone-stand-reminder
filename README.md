@@ -10,4 +10,4 @@ when you switch the audio output, it will remind you to put the headphone back i
 5. then you can enjoy your games or music
 6. when you switch the audio output, which means you stop using it, it plays the music you set and a window pops up to alert you
 
-*If you want to change the device or audio file, you can edit the setting.txt( on working directory or 'reminder\dist\HPstand_reminder\_internal\setting.txt' ) or just delete it.
+*If you want to change the device or audio file, you can edit the setting.txt or just delete it.
