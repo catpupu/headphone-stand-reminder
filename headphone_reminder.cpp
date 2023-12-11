@@ -2,10 +2,11 @@
 # include <string>
 # include <fstream>
 # include <windows.h>
+# include <tchar.h>
 
 using namespace std ;
 
-void printAll_Headphone_Device() ;
+void printAll_Device() ;
 void load_setfile( string & device_name, string & audio_filePath ) ;
 string getCurrent_Device() ;
 void playAlertSound( const string filePath ) ;
@@ -26,16 +27,15 @@ int main() {
     }
 }
 
-void printAll_Headphone_Device() {
-    // 取得系統中的音訊輸出裝置數量
-    UINT deviceCount = waveOutGetNumDevs();
+void printAll_Device() {
+    UINT deviceCount = waveOutGetNumDevs(); // 取得系統中的音訊輸出裝置數量
 
     if (deviceCount == 0) cout << "No audio output devices found." << endl;
 
     // 迭代每個音訊輸出裝置，並取得其資訊
     for (UINT deviceId = 0; deviceId < deviceCount; ++deviceId) {
         /*
-        你可以在 waveOutCaps 中找到其他音訊裝置的資訊
+        waveOutCaps資訊結構
         typedef struct {
             WORD    wMid;
             WORD    wPid;
@@ -51,13 +51,10 @@ void printAll_Headphone_Device() {
         WAVEOUTCAPS waveOutCaps;
         MMRESULT result = waveOutGetDevCaps(deviceId, &waveOutCaps, sizeof(WAVEOUTCAPS));
 
-        // function
-        // convert TCHAR[32](waveOutCaps.szPname) to string
-        wstring wideStr( waveOutCaps.szPname ) ;
-        string narrowStr( wideStr.begin(), wideStr.end() ) ;
+        if ( result == MMSYSERR_NOERROR ) {
+            cout << waveOutCaps.szPname << endl ;
+        }
 
-        // if "Headphones" in device name : print
-        if ( result == MMSYSERR_NOERROR ) cout << waveOutCaps.szPname << endl ;
         else cerr << "Error getting device information for device " << deviceId << endl;
     }
 }
@@ -76,18 +73,28 @@ void load_setfile( string & device_name, string & audio_filePath ) {
         ofstream init_setting("setting.txt") ;
 
         cout << "All headphone device : " ;
-        printAll_Headphone_Device() ;
+        printAll_Device() ;
+
         cout << endl << "headphone device name : " ;
-        cin >> device_name ;
+        std::getline( cin, device_name ) ;
+        
         cout << "music file path : " ;
-        cin >> audio_filePath ;
+        std::getline( cin, audio_filePath ) ;
+
         init_setting << device_name << "\n" << audio_filePath << "\n" ;
         init_setting.close() ;
     }
 }
 
 string getCurrent_Device() {
-    ;
+    WAVEOUTCAPS waveOutCaps ;
+    MMRESULT result = waveOutGetDevCaps(WAVE_MAPPER, &waveOutCaps, sizeof(WAVEOUTCAPS));
+
+    if ( result == MMSYSERR_NOERROR ) {
+        std::string device_name( waveOutCaps.szPname ) ;
+        return device_name ;
+    }
+    else cerr << "Error getting current device information" << endl ;
 }
 
 void playAlertSound( const string filePath ) {
